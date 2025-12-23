@@ -1,3 +1,5 @@
+package snake;
+
 public class TurboSnake extends Snake {
     public int multiplier;
 

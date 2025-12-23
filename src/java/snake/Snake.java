@@ -1,3 +1,5 @@
+package snake;
+
 public class Snake {
     public int position;
     public int length;
