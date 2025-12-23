@@ -8,14 +8,15 @@ public class GameInstance {
     private volatile boolean running = false;
     private Thread inputThread;
     private static final AtomicReference<String> input = new AtomicReference<>(null);
+    private static final int delta = 500;
     public final int mapHeight;
     public final int mapWidth;
     public final Board board;
 
     private GameInstance() {
         instance = this;
-        this.mapHeight = 40;
-        this.mapWidth = 80;
+        this.mapHeight = 12;
+        this.mapWidth = 30;
         this.board = new Board(mapHeight, mapWidth);
     }
 
@@ -28,7 +29,11 @@ public class GameInstance {
 
     public void start() {
         running = true;
+        startInputThread();
+        startGameLoop();
+    }
 
+    public void startInputThread() {
         inputThread = new Thread(() -> {
             Scanner scanner = new Scanner(System.in);
             while (running) {
@@ -40,4 +45,37 @@ public class GameInstance {
         inputThread.setDaemon(true);
         inputThread.start();
     }
+
+    public void startGameLoop() {
+        try {
+            Thread.sleep(3 * delta);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return;
+        }
+
+        while (running) {
+            update();
+            board.printBoard();
+
+            try {
+                Thread.sleep(delta);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
+    }
+
+    public void update() {
+        String cmd = input.getAndSet(null);
+
+        if (cmd != null) {
+            switch (cmd.toLowerCase().charAt(0)) {
+
+            }
+        }
+    }
+
+
 }
