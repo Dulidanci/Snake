@@ -1,4 +1,7 @@
-import map.Board;
+package snake;
+
+import snake.map.Board;
+import snake.snake.Direction;
 
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicReference;
@@ -8,7 +11,7 @@ public class GameInstance {
     private volatile boolean running = false;
     private Thread inputThread;
     private static final AtomicReference<String> input = new AtomicReference<>(null);
-    private static final int delta = 500;
+    private static final int delta = 1500;
     public final int mapHeight;
     public final int mapWidth;
     public final Board board;
@@ -33,6 +36,13 @@ public class GameInstance {
         startGameLoop();
     }
 
+    public void stop() {
+        running = false;
+        if (inputThread != null) {
+            inputThread.interrupt();
+        }
+    }
+
     public void startInputThread() {
         inputThread = new Thread(() -> {
             Scanner scanner = new Scanner(System.in);
@@ -47,6 +57,7 @@ public class GameInstance {
     }
 
     public void startGameLoop() {
+        board.printBoard();
         try {
             Thread.sleep(3 * delta);
         } catch (InterruptedException e) {
@@ -70,12 +81,7 @@ public class GameInstance {
     public void update() {
         String cmd = input.getAndSet(null);
 
-        if (cmd != null) {
-            switch (cmd.toLowerCase().charAt(0)) {
-
-            }
-        }
+        this.board.snake.step(Direction.fromChar(
+                cmd != null && !cmd.isEmpty() ? cmd.charAt(0) : 0));
     }
-
-
 }

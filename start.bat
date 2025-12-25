@@ -1,2 +1,2 @@
-java src/java/Main.java
+java src/java/snake/Main.java
 pause
