@@ -11,7 +11,7 @@ public class GameInstance {
     private volatile boolean running = false;
     private Thread inputThread;
     private static final AtomicReference<String> input = new AtomicReference<>(null);
-    private static final int delta = 1500;
+    private static final int delta = 750;
     public final int mapHeight;
     public final int mapWidth;
     public final Board board;
@@ -41,6 +41,7 @@ public class GameInstance {
         if (inputThread != null) {
             inputThread.interrupt();
         }
+        deathScreen();
     }
 
     public void startInputThread() {
@@ -83,5 +84,11 @@ public class GameInstance {
 
         this.board.snake.step(Direction.fromChar(
                 cmd != null && !cmd.isEmpty() ? cmd.charAt(0) : 0));
+
+        this.board.checkApples();
+    }
+
+    public void deathScreen() {
+        System.out.println("Well, you died! Your score is " + (this.board.snake.snake.size() - 3) + "! GG");
     }
 }

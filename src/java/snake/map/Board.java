@@ -6,16 +6,21 @@ import snake.snake.Position;
 import snake.snake.Snake;
 import snake.snake.SnakePart;
 
+import java.util.ArrayList;
+
 public class Board {
     private final Cells[][] grid;
     public final int height;
     public final int width;
+    public final int maxApples;
     public Snake snake;
+    public ArrayList<Position> apples = new ArrayList<>();
 
     public Board(int height, int width) {
         this.height = height;
         this.width = width;
         this.grid = new Cells[height][width];
+        this.maxApples = 3;
         prepareBoard();
     }
 
@@ -35,6 +40,7 @@ public class Board {
         }
         this.snake = new Snake(this, new Position(10, 6), Direction.RIGHT, 2);
         registerSnake(snake);
+        checkApples();
     }
 
     public void printBoard() {
@@ -66,12 +72,34 @@ public class Board {
     public void registerSnake(Snake snake) {
         int length = snake.snake.size();
         if (length > 0) {
-            setCell(snake.snake.getFirst().position(), Cells.SNAKE_HEAD);
+            setCell(snake.snake.get(0).position(), Cells.SNAKE_HEAD);
         }
         for (int i = 1; i < length-1; i++) {
             setCell(snake.snake.get(i).position(), Cells.getSnakePart(snake.snake.get(i).direction(), snake.snake.get(i + 1).direction().getOpposite()));
         }
-        setCell(snake.snake.getLast().position(), Cells.getSnakePart(snake.snake.getLast().direction(), snake.snake.getLast().direction().getOpposite()));
+        setCell(snake.snake.get(snake.snake.size() - 1).position(), Cells.getSnakePart(snake.snake.get(snake.snake.size() - 1).direction(), snake.snake.get(snake.snake.size() - 1).direction().getOpposite()));
+    }
+
+    public void addApple(int count) {
+        for (int i = 0; i < count; i++) {
+            int x, y;
+            do {
+                x = (int) (Math.random() * (this.width - 2) + 1);
+                y = (int) (Math.random() * (this.height - 2) + 1);
+            } while (this.getCell(new Position(x, y)) != Cells.EMPTY);
+            apples.add(new Position(x, y));
+            this.setCell(new Position(x, y), Cells.APPLE);
+        }
+    }
+
+    public void removeApple(Position position) {
+        apples.remove(position);
+    }
+
+    public void checkApples() {
+        if (apples.size() < maxApples) {
+            addApple(maxApples - apples.size());
+        }
     }
 
     public void death() {

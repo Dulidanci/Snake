@@ -25,33 +25,37 @@ public class Snake {
             this.board.death();
             return;
         }
-        Direction nextDirection = (direction.getOpposite() != this.snake.getFirst().direction() && direction != Direction.NULL)
+        Direction nextDirection = (direction.getOpposite() != this.snake.get(0).direction() && direction != Direction.NULL)
                 ? direction
-                : this.snake.getFirst().direction();
+                : this.snake.get(0).direction();
 
-        Cells nextCell = board.getCell(this.snake.getFirst().position().add(nextDirection.getVector()));
+        Cells nextCell = board.getCell(this.snake.get(0).position().add(nextDirection.getVector()));
         switch (nextCell) {
             case EMPTY -> {
-                // replace old head Cell
-                this.board.setCell(this.snake.getFirst().position(), Cells.getSnakePart(nextDirection, this.snake.getFirst().direction().getOpposite()));
-                // add new head position
-                this.snake.addFirst(new SnakePart(this.snake.getFirst().position().add(nextDirection.getVector()), nextDirection));
-                // replace new head Cell
-                this.board.setCell(this.snake.getFirst().position(), Cells.SNAKE_HEAD);
-                // replace tail Cell
-                this.board.setCell(this.snake.getLast().position(), Cells.EMPTY);
-                // remove Tail
-                this.snake.removeLast();
+                moveHead(nextDirection);
+                moveTail();
             }
             case APPLE -> {
-                // replace old head Cell
-                this.board.setCell(this.snake.getFirst().position(), Cells.getSnakePart(nextDirection, this.snake.getFirst().direction().getOpposite()));
-                // add new head position
-                this.snake.addFirst(new SnakePart(this.snake.getFirst().position().add(nextDirection.getVector()), nextDirection));
-                // replace new head Cell
-                this.board.setCell(this.snake.getFirst().position(), Cells.SNAKE_HEAD);
+                moveHead(nextDirection);
+                this.board.removeApple(this.snake.get(0).position());
             }
             default -> board.death();
         }
+    }
+
+    public void moveHead(Direction nextDirection) {
+        // replace old head Cell
+        this.board.setCell(this.snake.get(0).position(), Cells.getSnakePart(nextDirection, this.snake.get(0).direction().getOpposite()));
+        // add new head position
+        this.snake.add(0, new SnakePart(this.snake.get(0).position().add(nextDirection.getVector()), nextDirection));
+        // replace new head Cell
+        this.board.setCell(this.snake.get(0).position(), Cells.SNAKE_HEAD);
+    }
+
+    public void moveTail() {
+        // replace tail Cell
+        this.board.setCell(this.snake.get(this.snake.size() - 1).position(), Cells.EMPTY);
+        // remove Tail
+        this.snake.remove(this.snake.size() - 1);
     }
 }
